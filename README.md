@@ -216,3 +216,4 @@ The default model is `google/gemini-3-flash-preview` — cheapest and fastest di
 - [TanStack AI docs](https://tanstack.com/ai)
 - [Cloudflare Containers docs](https://developers.cloudflare.com/containers/)
 - [Cloudflare R2 docs](https://developers.cloudflare.com/r2/)
+
