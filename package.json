@@ -1,0 +1,71 @@
+{
+  "name": "hyperframes-on-cloudflare",
+  "description": "Preview HTML video compositions in the browser and render MP4s server-side using Cloudflare Workers, Containers, and R2 — built with TanStack Start and TanStack AI.",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "cloudflare": {
+    "label": "HyperFrames Video Rendering",
+    "products": [
+      "Workers",
+      "Containers",
+      "R2"
+    ],
+    "categories": [],
+    "docs_url": "https://github.com/heygen-com/hyperframes",
+    "icon_urls": [],
+    "bindings": {
+      "RENDER_CONTAINER": {
+        "description": "Container Durable Object hosting Chromium + ffmpeg + hyperframes; receives composition files and returns MP4 bytes."
+      },
+      "RENDERS": {
+        "description": "R2 bucket where rendered MP4s are stored. Created automatically on first deploy."
+      },
+      "ASSETS": {
+        "description": "Static asset binding for the client build and the bundled composition HTML."
+      }
+    }
+  },
+  "scripts": {
+    "prepare-assets": "node scripts/build.mjs",
+    "dev": "npm run prepare-assets && vite dev --port 3000",
+    "build": "npm run prepare-assets && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "^0.0.20",
+    "@hyperframes/core": "^0.5.3",
+    "@hyperframes/player": "^0.5.3",
+    "@tanstack/ai": "^0.42.0",
+    "@tanstack/ai-openrouter": "^0.15.10",
+    "@tanstack/ai-react": "^0.18.1",
+    "@tanstack/react-router": "^1.170.18",
+    "@tanstack/react-start": "^1.168.32",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.26.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "oxfmt": "^0.60.0",
+    "oxlint": "^1.75.0",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.70.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
