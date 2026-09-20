@@ -1,10 +1,20 @@
-# Render container: Node 22 + Chromium system libs + hyperframes + ffmpeg.
-# Bakes the renderer at build time so cold-start is just container provisioning,
-# not package install. Composition files are sent in the request body.
+# Extract only the target platform's FFprobe binary.
+FROM node:22-bookworm-slim AS ffprobe-builder
+
+WORKDIR /ffprobe-build
+
+RUN npm install --no-audit --no-fund --omit=dev ffprobe-static@3.1.0 \
+  && mkdir -p /out \
+  && cp "$(node -p "require('ffprobe-static').path")" /out/ffprobe \
+  && chmod +x /out/ffprobe \
+  && /out/ffprobe -version
+
+# Runtime image.
 FROM node:22-bookworm-slim
 
-# Chromium runtime libs. Match what `chrome-headless-shell` needs on Debian.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Chromium runtime libraries.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
     ca-certificates \
     fonts-liberation \
     libasound2 \
@@ -34,17 +44,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install hyperframes + ffmpeg-static, then symlink ffmpeg to a stable path.
 COPY container/package.json ./package.json
-RUN npm install --no-audit --no-fund ffprobe-static \
-  && ln -sf /app/node_modules/ffmpeg-static/ffmpeg /usr/local/bin/ffmpeg \
-  && ln -sf "$(node -p "require('ffprobe-static').path")" /usr/local/bin/ffprobe \
-  && /usr/local/bin/ffmpeg -version \
-  && /usr/local/bin/ffprobe -version
 
-# The render server.
+# Install renderer dependencies and discard npm's download cache
+# within the same layer.
+RUN npm install --no-audit --no-fund --omit=dev \
+  && ln -sf /app/node_modules/ffmpeg-static/ffmpeg /usr/local/bin/ffmpeg \
+  && /usr/local/bin/ffmpeg -version \
+  && npm cache clean --force
+
+# Copy only FFprobe, in a separate upload layer.
+COPY --from=ffprobe-builder /out/ffprobe /usr/local/bin/ffprobe
+
+RUN /usr/local/bin/ffprobe -version
+
 COPY container/server.mjs ./server.mjs
 
 ENV PORT=8080
 EXPOSE 8080
+
 CMD ["node", "server.mjs"]
