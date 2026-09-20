@@ -37,9 +37,10 @@ WORKDIR /app
 # Install hyperframes + ffmpeg-static, then symlink ffmpeg to a stable path.
 COPY container/package.json ./package.json
 RUN npm install --no-audit --no-fund ffprobe-static \
-  && ln -sf /app/node_modules/ffmpeg-static/ffmpeg /usr/local/bin/ffmpeg \  && ln -sf /app/node_modules/ffprobe-static/bin/linux/x64/ffprobe /usr/local/bin/ffprobe \
-
-  && /usr/local/bin/ffmpeg -version
+  && ln -sf /app/node_modules/ffmpeg-static/ffmpeg /usr/local/bin/ffmpeg \
+  && ln -sf "$(node -p "require('ffprobe-static').path")" /usr/local/bin/ffprobe \
+  && /usr/local/bin/ffmpeg -version \
+  && /usr/local/bin/ffprobe -version
 
 # Pre-download chrome-headless-shell so the first render doesn't pay for it.
 RUN npx --no-install hyperframes browser ensure
