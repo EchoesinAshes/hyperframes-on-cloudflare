@@ -42,9 +42,6 @@ RUN npm install --no-audit --no-fund ffprobe-static \
   && /usr/local/bin/ffmpeg -version \
   && /usr/local/bin/ffprobe -version
 
-# Pre-download chrome-headless-shell so the first render doesn't pay for it.
-RUN npx --no-install hyperframes browser ensure
-
 # The render server.
 COPY container/server.mjs ./server.mjs
 
