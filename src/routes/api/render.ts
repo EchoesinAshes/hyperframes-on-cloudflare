@@ -23,6 +23,11 @@ export const Route = createFileRoute("/api/render")({
       POST: async ({ request }) => {
         const t0 = Date.now();
 
+        const authHeader = request.headers.get("Authorization") ?? "";
+        if (!env.RENDER_SECRET || authHeader !== `Bearer ${env.RENDER_SECRET}`) {
+          return jsonError("unauthorized", 401);
+        }
+
         let files: CompositionFile[];
         let source: "bundled" | "html" = "bundled";
 
