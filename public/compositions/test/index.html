@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Zero Test HyperFrames</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #0a0a1a;
+    }
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #0a0a1a;
+      color: #e8e8ff;
+      font-family: Poppins, sans-serif;
+    }
+    #grid {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.3;
+      background:
+        linear-gradient(90deg, transparent calc(100% - 1px), #3a3a7a 0) 0 0 / 120px 100%,
+        linear-gradient(0deg, transparent calc(100% - 1px), #3a3a7a 0) 0 0 / 100% 120px;
+    }
+    #copy-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      padding: 0 150px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #copy-layer h1 {
+      margin: 0;
+      width: 1300px;
+      font-size: 88px;
+      line-height: 1.05;
+      font-weight: 700;
+      text-align: center;
+      color: #e8e8ff;
+    }
+    #copy-layer .accent {
+      color: #7c6fff;
+    }
+    #sub {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: grid;
+      place-items: end center;
+      padding: 0 150px 120px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #sub p {
+      margin: 0;
+      font-family: Montserrat, sans-serif;
+      font-size: 36px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(232,232,255,0.55);
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="test" data-width="1920" data-height="1080" data-start="0" data-duration="6" data-root="true">
+    <div id="grid"></div>
+    <div id="copy-layer">
+      <h1>Agents that <span class="accent">think.</span><br>Infrastructure that <span class="accent">runs.</span></h1>
+    </div>
+    <div id="sub">
+      <p>Built by Zero &mdash; HyperFrames</p>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    (function () {
+      const copy = document.querySelector('#copy-layer');
+      const sub = document.querySelector('#sub');
+      const state = { copyOpacity: 0, subOpacity: 0 };
+      function render() {
+        copy.style.opacity = state.copyOpacity;
+        sub.style.opacity = state.subOpacity;
+      }
+      const tl = anime.timeline({ autoplay: false, easing: 'linear', update: render });
+      tl.add({ targets: state, copyOpacity: 1, duration: 600, easing: 'easeOutCubic' }, 200)
+        .add({ targets: state, subOpacity: 1, duration: 500, easing: 'easeOutCubic' }, 900);
+      const totalMs = 6000;
+      window.__timelines['test'] = {
+        duration: totalMs,
+        seek: function(ms) { tl.seek(ms); }
+      };
+      const root = document.querySelector('#root');
+      if (root) {
+        root.addEventListener('hf:seek', function(e) { tl.seek(e.detail.ms); });
+        root.addEventListener('hf:play', function() { tl.play(); });
+        root.addEventListener('hf:pause', function() { tl.pause(); });
+      }
+    })();
+  </script>
+</body>
+</html>
