@@ -1,28 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=1920, height=1080">
-  <title>Zero Test HyperFrames</title>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Composition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      margin: 0;
       width: 1920px;
       height: 1080px;
       overflow: hidden;
       background: #0a0a1a;
-    }
-    #root {
-      position: relative;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      background: #0a0a1a;
-      color: #e8e8ff;
-      font-family: Poppins, sans-serif;
+      font-family: Inter, sans-serif;
     }
     #grid {
       position: absolute;
@@ -89,27 +82,10 @@
   <script>
     window.__timelines = window.__timelines || {};
     (function () {
-      const copy = document.querySelector('#copy-layer');
-      const sub = document.querySelector('#sub');
-      const state = { copyOpacity: 0, subOpacity: 0 };
-      function render() {
-        copy.style.opacity = state.copyOpacity;
-        sub.style.opacity = state.subOpacity;
-      }
-      const tl = anime.timeline({ autoplay: false, easing: 'linear', update: render });
-      tl.add({ targets: state, copyOpacity: 1, duration: 600, easing: 'easeOutCubic' }, 200)
-        .add({ targets: state, subOpacity: 1, duration: 500, easing: 'easeOutCubic' }, 900);
-      const totalMs = 6000;
-      window.__timelines['test'] = {
-        duration: () => totalMs,
-        seek: function(ms) { tl.seek(ms); }
-      };
-      const root = document.querySelector('#root');
-      if (root) {
-        root.addEventListener('hf:seek', function(e) { tl.seek(e.detail.ms); });
-        root.addEventListener('hf:play', function() { tl.play(); });
-        root.addEventListener('hf:pause', function() { tl.pause(); });
-      }
+      const tl = gsap.timeline({ paused: true });
+      tl.to('#copy-layer', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.2);
+      tl.to('#sub',        { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.9);
+      window.__timelines['test'] = tl;
     })();
   </script>
 </body>
