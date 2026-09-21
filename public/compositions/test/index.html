@@ -101,7 +101,7 @@
         .add({ targets: state, subOpacity: 1, duration: 500, easing: 'easeOutCubic' }, 900);
       const totalMs = 6000;
       window.__timelines['test'] = {
-        duration: totalMs,
+        duration: () => totalMs,
         seek: function(ms) { tl.seek(ms); }
       };
       const root = document.querySelector('#root');
